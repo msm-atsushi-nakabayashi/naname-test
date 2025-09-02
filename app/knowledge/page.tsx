@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Search, ThumbsUp, Eye, Tag, Plus, TrendingUp, BookOpen } from 'lucide-react';
 import { mockKnowledgeArticles } from '@/lib/data/mock';
 import { formatDate, cn } from '@/lib/utils';
@@ -265,10 +266,12 @@ export default function KnowledgePage() {
               </h3>
               
               <div className="flex items-center space-x-2 mb-3 text-sm text-gray-600">
-                <img
-                  src={article.author.avatarUrl}
+                <Image
+                  src={article.author.avatarUrl || '/default-avatar.png'}
                   alt={article.author.name}
-                  className="h-6 w-6 rounded-full"
+                  width={24}
+                  height={24}
+                  className="rounded-full"
                 />
                 <span>{article.author.name}</span>
                 <span>•</span>

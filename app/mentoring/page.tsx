@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Calendar, Clock, Users, Video, FileText, Star, Plus } from 'lucide-react';
 import { mockSessions } from '@/lib/data/mock';
 import { formatDateTime, getStatusLabel, getStatusColor, cn } from '@/lib/utils';
@@ -147,10 +148,12 @@ export default function MentoringPage() {
             <div key={session.id} className="p-6 hover:bg-gray-50 transition-colors">
               <div className="flex items-start justify-between">
                 <div className="flex items-start space-x-4">
-                  <img
-                    src={session.mentor.user.avatarUrl}
+                  <Image
+                    src={session.mentor.user.avatarUrl || '/default-avatar.png'}
                     alt={session.mentor.user.name}
-                    className="h-12 w-12 rounded-full"
+                    width={48}
+                    height={48}
+                    className="rounded-full"
                   />
                   <div>
                     <div className="flex items-center space-x-2">

@@ -5,6 +5,7 @@ export interface User {
   email: string;
   name: string;
   roles: UserRole[];
+  department?: string;
   invitedBy?: string;
   invitedAt?: Date;
   createdAt: Date;

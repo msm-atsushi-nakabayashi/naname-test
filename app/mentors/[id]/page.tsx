@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { Calendar, Clock, Star, Award, MapPin, Briefcase, Mail, MessageSquare, Users, ChevronLeft, Check } from 'lucide-react';
+import { Calendar, Clock, Star, Award, Briefcase, MessageSquare, ChevronLeft, Check } from 'lucide-react';
 import { mockMentorProfiles } from '@/lib/data/mock';
 import { getRankLabel, getRankColor, formatDate } from '@/lib/utils';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -67,10 +68,12 @@ export default function MentorDetailPage() {
             {/* Profile Header */}
             <div className="bg-white rounded-lg shadow p-6">
               <div className="flex items-start space-x-6">
-                <img
-                  src={mentor.user.avatarUrl}
+                <Image
+                  src={mentor.user.avatarUrl || '/default-avatar.png'}
                   alt={mentor.user.name}
-                  className="h-24 w-24 rounded-full"
+                  width={96}
+                  height={96}
+                  className="rounded-full"
                 />
                 <div className="flex-1">
                   <h1 className="text-2xl font-bold text-gray-900">{mentor.user.name}</h1>
@@ -126,10 +129,12 @@ export default function MentorDetailPage() {
                     <div key={index} className="border-l-4 border-blue-500 pl-4">
                       <p className="text-gray-700 italic">&ldquo;{rec.content}&rdquo;</p>
                       <div className="flex items-center mt-2">
-                        <img
-                          src={rec.author.avatarUrl}
+                        <Image
+                          src={rec.author.avatarUrl || '/default-avatar.png'}
                           alt={rec.author.name}
-                          className="h-8 w-8 rounded-full mr-2"
+                          width={32}
+                          height={32}
+                          className="rounded-full mr-2"
                         />
                         <div>
                           <p className="text-sm font-medium text-gray-900">{rec.author.name}</p>

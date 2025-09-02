@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Search, Star, Award, Calendar, Clock, Check } from 'lucide-react';
 import { mockMentorProfiles } from '@/lib/data/mock';
 import { getRankLabel, getRankColor, cn, formatDate } from '@/lib/utils';
@@ -9,7 +10,15 @@ import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useRouter } from 'next/navigation';
 
 // Booking Button Component
-function BookingButton({ mentor }: { mentor: any }) {
+interface BookingButtonProps {
+  mentor: {
+    user: {
+      name: string;
+    };
+  };
+}
+
+function BookingButton({ mentor }: BookingButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
@@ -234,10 +243,12 @@ export default function MentorsPage() {
           <div key={mentor.id} className="bg-white rounded-lg shadow hover:shadow-lg transition-shadow">
             <div className="p-6">
               <div className="flex items-start space-x-4 mb-4">
-                <img
-                  src={mentor.user.avatarUrl}
+                <Image
+                  src={mentor.user.avatarUrl || '/default-avatar.png'}
                   alt={mentor.user.name}
-                  className="h-16 w-16 rounded-full"
+                  width={64}
+                  height={64}
+                  className="rounded-full"
                 />
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold text-gray-900">

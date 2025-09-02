@@ -22,7 +22,7 @@ export default function LoginPage() {
       } else {
         setError('メールアドレスまたはパスワードが正しくありません')
       }
-    } catch (err) {
+    } catch {
       setError('ログインに失敗しました')
     }
   }
