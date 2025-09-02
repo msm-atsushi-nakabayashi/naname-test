@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, Star, Award, Calendar, Clock } from 'lucide-react';
+import { Search, Star, Award, Calendar, Clock } from 'lucide-react';
 import { mockMentorProfiles } from '@/lib/data/mock';
 import { getRankLabel, getRankColor, cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -171,7 +171,7 @@ export default function MentorsPage() {
                 <div className="border-t pt-4">
                   <p className="text-xs font-medium text-gray-700 mb-2">推薦コメント</p>
                   <p className="text-xs text-gray-600 italic line-clamp-2">
-                    "{mentor.recommendations[0].content}"
+                    &ldquo;{mentor.recommendations[0].content}&rdquo;
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
                     - {mentor.recommendations[0].author.name}

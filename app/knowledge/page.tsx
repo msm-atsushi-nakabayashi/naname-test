@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Filter, ThumbsUp, Eye, Tag, Edit, Plus, TrendingUp, BookOpen } from 'lucide-react';
-import { mockKnowledgeArticles, currentUser } from '@/lib/data/mock';
+import { Search, ThumbsUp, Eye, Tag, Plus, TrendingUp, BookOpen } from 'lucide-react';
+import { mockKnowledgeArticles } from '@/lib/data/mock';
 import { formatDate, cn } from '@/lib/utils';
-import Link from 'next/link';
 
 export default function KnowledgePage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -242,7 +241,7 @@ export default function KnowledgePage() {
               </label>
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
+                onChange={(e) => setSortBy(e.target.value as 'recent' | 'popular' | 'views')}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="recent">最新順</option>

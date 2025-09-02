@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, Clock, Users, Video, FileText, Star, Plus, Filter } from 'lucide-react';
-import { mockSessions, currentUser, mockMentorProfiles } from '@/lib/data/mock';
+import { Calendar, Clock, Users, Video, FileText, Star, Plus } from 'lucide-react';
+import { mockSessions, currentUser } from '@/lib/data/mock';
 import { formatDateTime, getStatusLabel, getStatusColor, cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -15,8 +15,6 @@ export default function MentoringPage() {
   );
 
   const filteredSessions = userSessions.filter(session => {
-    const now = new Date();
-    const sessionDate = session.scheduledAt || session.createdAt;
     
     let matchesTab = true;
     if (activeTab === 'upcoming') {
@@ -126,10 +124,9 @@ export default function MentoringPage() {
               </button>
             </div>
             <div className="flex items-center space-x-2">
-              <Filter className="h-4 w-4 text-gray-400" />
               <select
                 value={sessionType}
-                onChange={(e) => setSessionType(e.target.value as any)}
+                onChange={(e) => setSessionType(e.target.value as 'all' | 'long-term' | 'flash')}
                 className="text-sm border-gray-300 rounded-md"
               >
                 <option value="all">すべての種類</option>

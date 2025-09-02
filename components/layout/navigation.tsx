@@ -8,7 +8,6 @@ import {
   Calendar, 
   BookOpen, 
   Award,
-  User,
   LogOut,
   Bell
 } from 'lucide-react';

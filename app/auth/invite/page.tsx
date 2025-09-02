@@ -69,7 +69,7 @@ export default function InvitePage() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <p className="mt-1 text-xs text-gray-500">
-                ※デモ用: "INVITE2024" を入力してください
+                ※デモ用: &ldquo;INVITE2024&rdquo; を入力してください
               </p>
             </div>
 

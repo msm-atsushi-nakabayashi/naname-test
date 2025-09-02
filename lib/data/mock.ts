@@ -1,4 +1,4 @@
-import { User, MentorProfile, MentoringSession, Review, KnowledgeArticle, Schedule } from '@/lib/types';
+import { User, MentorProfile, MentoringSession, KnowledgeArticle, Schedule } from '@/lib/types';
 
 export const mockUsers: User[] = [
   {
