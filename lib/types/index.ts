@@ -26,6 +26,9 @@ export interface MentorProfile {
   rank: MentorRank;
   availableForFlash: boolean;
   availableForLongTerm: boolean;
+  sessionsCompleted: number;
+  mentees: string[];
+  availableSlots: { dayOfWeek: number; time: string }[];
 }
 
 export interface Recommendation {

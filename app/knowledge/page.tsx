@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Search, ThumbsUp, Eye, Tag, Plus, TrendingUp, BookOpen } from 'lucide-react';
 import { mockKnowledgeArticles } from '@/lib/data/mock';
 import { formatDate, cn } from '@/lib/utils';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
 export default function KnowledgePage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,7 +50,8 @@ export default function KnowledgePage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <ProtectedRoute>
+      <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">ナレッジベース</h1>
@@ -311,6 +313,7 @@ export default function KnowledgePage() {
           <p className="text-gray-500">該当する記事が見つかりませんでした</p>
         </div>
       )}
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

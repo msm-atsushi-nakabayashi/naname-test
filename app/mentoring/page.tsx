@@ -2,16 +2,19 @@
 
 import { useState } from 'react';
 import { Calendar, Clock, Users, Video, FileText, Star, Plus } from 'lucide-react';
-import { mockSessions, currentUser } from '@/lib/data/mock';
+import { mockSessions } from '@/lib/data/mock';
 import { formatDateTime, getStatusLabel, getStatusColor, cn } from '@/lib/utils';
 import Link from 'next/link';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function MentoringPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'all'>('upcoming');
   const [sessionType, setSessionType] = useState<'all' | 'long-term' | 'flash'>('all');
 
   const userSessions = mockSessions.filter(
-    s => s.menteeId === currentUser.id || s.mentorId === currentUser.id
+    s => s.menteeId === user?.id || s.mentorId === user?.id
   );
 
   const filteredSessions = userSessions.filter(session => {
@@ -29,7 +32,8 @@ export default function MentoringPage() {
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <ProtectedRoute>
+      <div className="container mx-auto px-4 py-8">
       <div className="mb-8 flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">メンタリングセッション</h1>
@@ -226,6 +230,7 @@ export default function MentoringPage() {
           </div>
         )}
       </div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

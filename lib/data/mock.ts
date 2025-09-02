@@ -85,7 +85,14 @@ export const mockMentorProfiles: MentorProfile[] = [
     points: 2500,
     rank: 'gold',
     availableForFlash: true,
-    availableForLongTerm: true
+    availableForLongTerm: true,
+    sessionsCompleted: 48,
+    mentees: ['4', '5'],
+    availableSlots: [
+      { dayOfWeek: 1, time: '19:00' },
+      { dayOfWeek: 3, time: '19:00' },
+      { dayOfWeek: 5, time: '19:00' }
+    ]
   },
   {
     id: '2',
@@ -111,7 +118,13 @@ export const mockMentorProfiles: MentorProfile[] = [
     points: 3500,
     rank: 'platinum',
     availableForFlash: true,
-    availableForLongTerm: false
+    availableForLongTerm: false,
+    sessionsCompleted: 75,
+    mentees: ['1', '4'],
+    availableSlots: [
+      { dayOfWeek: 2, time: '18:00' },
+      { dayOfWeek: 4, time: '18:00' }
+    ]
   },
   {
     id: '3',
@@ -127,7 +140,14 @@ export const mockMentorProfiles: MentorProfile[] = [
     points: 800,
     rank: 'silver',
     availableForFlash: true,
-    availableForLongTerm: true
+    availableForLongTerm: true,
+    sessionsCompleted: 15,
+    mentees: ['1'],
+    availableSlots: [
+      { dayOfWeek: 1, time: '20:00' },
+      { dayOfWeek: 3, time: '20:00' },
+      { dayOfWeek: 5, time: '19:00' }
+    ]
   }
 ];
 

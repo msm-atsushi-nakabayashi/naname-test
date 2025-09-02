@@ -1,11 +1,16 @@
+'use client'
+
 import { Calendar, Users, BookOpen, TrendingUp, Clock, Star } from 'lucide-react';
-import { currentUser, mockSessions, mockMentorProfiles, mockKnowledgeArticles } from '@/lib/data/mock';
+import { mockSessions, mockMentorProfiles, mockKnowledgeArticles } from '@/lib/data/mock';
 import { formatDate, getStatusLabel, getStatusColor, getRankLabel, getRankColor } from '@/lib/utils';
 import Link from 'next/link';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const upcomingSessions = mockSessions
-    .filter(s => s.menteeId === currentUser.id && s.status === 'ongoing')
+    .filter(s => s.menteeId === user?.id && s.status === 'ongoing')
     .slice(0, 3);
 
   const topMentors = mockMentorProfiles
@@ -17,11 +22,12 @@ export default function DashboardPage() {
     .slice(0, 3);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">ダッシュボード</h1>
-        <p className="mt-2 text-gray-600">ようこそ、{currentUser.name}さん</p>
-      </div>
+    <ProtectedRoute>
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">ダッシュボード</h1>
+          <p className="mt-2 text-gray-600">ようこそ、{user?.name}さん</p>
+        </div>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
@@ -169,6 +175,7 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }

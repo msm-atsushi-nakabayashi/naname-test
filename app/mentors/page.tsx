@@ -1,10 +1,138 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, Star, Award, Calendar, Clock } from 'lucide-react';
+import { Search, Star, Award, Calendar, Clock, Check } from 'lucide-react';
 import { mockMentorProfiles } from '@/lib/data/mock';
-import { getRankLabel, getRankColor, cn } from '@/lib/utils';
+import { getRankLabel, getRankColor, cn, formatDate } from '@/lib/utils';
 import Link from 'next/link';
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useRouter } from 'next/navigation';
+
+// Booking Button Component
+function BookingButton({ mentor }: { mentor: any }) {
+  const [showModal, setShowModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>('');
+  const router = useRouter();
+
+  const handleBooking = () => {
+    if (selectedDate && selectedTime) {
+      alert(`予約が完了しました！\n日付: ${formatDate(selectedDate)}\n時間: ${selectedTime}`);
+      setShowModal(false);
+      router.push('/mentoring');
+    }
+  };
+
+  const availableDates = Array.from({ length: 30 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() + i);
+    return date;
+  });
+
+  const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+
+  return (
+    <>
+      <button 
+        onClick={() => setShowModal(true)}
+        className="px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors"
+      >
+        相談予約
+      </button>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b">
+              <h2 className="text-xl font-bold text-gray-900">相談予約</h2>
+              <p className="text-gray-600 mt-1">{mentor.user.name}さん</p>
+            </div>
+
+            <div className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  日付を選択
+                </label>
+                <div className="grid grid-cols-7 gap-1">
+                  {['日', '月', '火', '水', '木', '金', '土'].map(day => (
+                    <div key={day} className="text-center text-xs font-medium text-gray-500 py-1">
+                      {day}
+                    </div>
+                  ))}
+                  {availableDates.slice(0, 28).map((date, index) => {
+                    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    const isSelected = selectedDate?.toDateString() === date.toDateString();
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => !isWeekend && setSelectedDate(date)}
+                        disabled={isWeekend}
+                        className={`
+                          p-1 text-sm rounded
+                          ${isWeekend ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 
+                            isSelected ? 'bg-blue-500 text-white' : 
+                            'hover:bg-gray-100 text-gray-700'}
+                        `}
+                      >
+                        {date.getDate()}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {selectedDate && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    時間を選択
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {timeSlots.map(time => (
+                      <button
+                        key={time}
+                        onClick={() => setSelectedTime(time)}
+                        className={`
+                          px-2 py-1 text-sm rounded
+                          ${selectedTime === time ? 
+                            'bg-blue-500 text-white' : 
+                            'border border-gray-300 hover:bg-gray-50'}
+                        `}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-6 border-t flex justify-end space-x-3">
+              <button
+                onClick={() => setShowModal(false)}
+                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              >
+                キャンセル
+              </button>
+              <button
+                onClick={handleBooking}
+                disabled={!selectedDate || !selectedTime}
+                className={`
+                  px-4 py-2 rounded-lg flex items-center
+                  ${selectedDate && selectedTime ? 
+                    'bg-blue-600 text-white hover:bg-blue-700' : 
+                    'bg-gray-300 text-gray-500 cursor-not-allowed'}
+                `}
+              >
+                <Check className="h-4 w-4 mr-2" />
+                予約確定
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
 
 export default function MentorsPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,7 +158,8 @@ export default function MentorsPage() {
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <ProtectedRoute>
+      <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">メンター一覧</h1>
         <p className="mt-2 text-gray-600">あなたに合ったメンターを見つけましょう</p>
@@ -187,9 +316,7 @@ export default function MentorsPage() {
                   詳細を見る
                 </Link>
                 {mentor.availableForFlash && (
-                  <button className="px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50 transition-colors">
-                    相談予約
-                  </button>
+                  <BookingButton mentor={mentor} />
                 )}
               </div>
             </div>
@@ -202,6 +329,7 @@ export default function MentorsPage() {
           <p className="text-gray-500">該当するメンターが見つかりませんでした</p>
         </div>
       )}
-    </div>
+      </div>
+    </ProtectedRoute>
   );
 }
