@@ -16,6 +16,7 @@ interface User {
 interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
+  isLoading: boolean
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
 }
@@ -25,14 +26,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoading, setIsLoading] = useState(true) // 初期化中かどうかを管理
 
   useEffect(() => {
     // localStorageから既存のログイン情報を取得
-    const storedUser = localStorage.getItem('user')
-    if (storedUser) {
-      const userData = JSON.parse(storedUser)
-      setUser(userData)
-      setIsAuthenticated(true)
+    try {
+      const storedUser = typeof window !== 'undefined' ? localStorage.getItem('user') : null
+      if (storedUser) {
+        const userData = JSON.parse(storedUser)
+        setUser(userData)
+        setIsAuthenticated(true)
+      }
+    } catch (error) {
+      console.error('Failed to load user from localStorage:', error)
+    } finally {
+      setIsLoading(false) // 初期化完了
     }
   }, [])
 
@@ -66,7 +74,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   )
