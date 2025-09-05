@@ -1,183 +1,105 @@
-import { User, MentorProfile, MentoringSession, KnowledgeArticle, Schedule } from '@/lib/types';
+import { User, MentorProfile, MentoringSession, KnowledgeArticle, Schedule, UserRole, MentorRank } from '@/lib/types';
+import usersData from '@/data/users.json';
+import mentorsData from '@/data/mentors.json';
 
-export const mockUsers: User[] = [
-  {
-    id: '1',
-    email: 'admin@company.com',
-    name: '山田太郎',
-    roles: ['admin'],
-    department: '経営企画部',
-    createdAt: new Date('2024-01-01'),
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin'
-  },
-  {
-    id: '2',
-    email: 'tanaka@company.com',
-    name: '田中花子',
-    roles: ['mentor', 'mentee'],
-    department: 'エンジニアリング部',
-    invitedBy: '1',
-    invitedAt: new Date('2024-01-15'),
-    createdAt: new Date('2024-01-15'),
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=tanaka'
-  },
-  {
-    id: '3',
-    email: 'suzuki@company.com',
-    name: '鈴木一郎',
-    roles: ['mentor'],
-    department: 'インフラ部',
-    invitedBy: '1',
-    invitedAt: new Date('2024-01-20'),
-    createdAt: new Date('2024-01-20'),
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=suzuki'
-  },
-  {
-    id: '4',
-    email: 'sato@company.com',
-    name: '佐藤美咲',
-    roles: ['mentee'],
-    department: 'エンジニアリング部',
-    invitedBy: '2',
-    invitedAt: new Date('2024-02-01'),
-    createdAt: new Date('2024-02-01'),
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sato'
-  },
-  {
-    id: '5',
-    email: 'watanabe@company.com',
-    name: '渡辺健太',
-    roles: ['mentor', 'mentee'],
-    department: 'プロダクト部',
-    invitedBy: '1',
-    invitedAt: new Date('2024-02-10'),
-    createdAt: new Date('2024-02-10'),
-    avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=watanabe'
-  }
-];
+// JSONファイルからユーザーデータを読み込み、Dateオブジェクトに変換
+const now = new Date();
+const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+const twoMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 2, 15);
+const oneMonthAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
-export const mockMentorProfiles: MentorProfile[] = [
-  {
-    id: '1',
-    userId: '2',
-    user: mockUsers[1],
-    selfIntroduction: 'フロントエンド開発を10年以上経験し、React、Vue.js、Next.jsなどのモダンなフレームワークに精通しています。チーム開発の経験も豊富で、若手エンジニアの成長をサポートすることに情熱を持っています。',
-    skills: ['React', 'TypeScript', 'Next.js', 'Vue.js', 'Node.js'],
-    specialties: ['フロントエンド開発', 'パフォーマンス最適化', 'アーキテクチャ設計'],
-    experience: '10年以上のWeb開発経験。大規模ECサイトの開発リーダー、スタートアップでのCTO経験あり。',
+export const mockUsers: User[] = usersData.users.map(user => ({
+  ...user,
+  roles: user.roles as UserRole[],
+  createdAt: threeMonthsAgo,
+  invitedAt: user.id !== '1' ? twoMonthsAgo : undefined,
+  invitedBy: user.id === '2' || user.id === '3' || user.id === '5' ? '6' : user.id === '4' ? '2' : undefined
+}));
+
+// JSONファイルからメンタープロファイルを読み込み、userオブジェクトを関連付け
+export const mockMentorProfiles: MentorProfile[] = mentorsData.mentorProfiles.map(mentor => {
+  const user = mockUsers.find(u => u.id === mentor.userId);
+  return {
+    ...mentor,
+    rank: mentor.rank as MentorRank,
+    user: user!,
     recommendations: [
-      {
-        id: '1',
-        mentorId: '1',
-        authorId: '1',
-        author: mockUsers[0],
-        content: '田中さんは技術力が高いだけでなく、メンティーの立場に立って丁寧に説明してくれる素晴らしいメンターです。',
-        isApproved: true,
-        createdAt: new Date('2024-02-01')
-      },
-      {
-        id: '2',
-        mentorId: '1',
-        authorId: '4',
-        author: mockUsers[3],
-        content: 'とても親身になって相談に乗ってくださいました。技術的な質問だけでなく、キャリアの相談もできて助かりました。',
-        isApproved: true,
-        createdAt: new Date('2024-03-01')
-      }
-    ],
-    rating: 4.8,
-    reviewCount: 12,
-    points: 2500,
-    rank: 'gold',
-    availableForFlash: true,
-    availableForLongTerm: true,
-    sessionsCompleted: 48,
-    mentees: ['4', '5'],
-    availableSlots: [
-      { dayOfWeek: 1, time: '19:00' },
-      { dayOfWeek: 3, time: '19:00' },
-      { dayOfWeek: 5, time: '19:00' }
+      ...(mentor.id === '1' ? [
+        {
+          id: '1',
+          mentorId: '1',
+          authorId: '1',
+          author: mockUsers[0],
+          content: '田中さんは技術力が高いだけでなく、メンティーの立場に立って丁寧に説明してくれる素晴らしいメンターです。',
+          isApproved: true,
+          createdAt: twoMonthsAgo
+        },
+        {
+          id: '2',
+          mentorId: '1',
+          authorId: '4',
+          author: mockUsers[3],
+          content: 'とても親身になって相談に乗ってくださいました。技術的な質問だけでなく、キャリアの相談もできて助かりました。',
+          isApproved: true,
+          createdAt: oneMonthAgo
+        }
+      ] : []),
+      ...(mentor.id === '2' ? [
+        {
+          id: '3',
+          mentorId: '2',
+          authorId: '1',
+          author: mockUsers[0],
+          content: '鈴木さんの深い技術知識と実践的なアドバイスは、多くのメンティーにとって貴重な学びとなっています。',
+          isApproved: true,
+          createdAt: new Date(now.getFullYear(), now.getMonth() - 1, 15)
+        }
+      ] : [])
     ]
-  },
-  {
-    id: '2',
-    userId: '3',
-    user: mockUsers[2],
-    selfIntroduction: 'バックエンド開発のスペシャリストとして、マイクロサービスアーキテクチャやクラウドインフラの設計・構築を得意としています。',
-    skills: ['Go', 'Python', 'Kubernetes', 'AWS', 'PostgreSQL'],
-    specialties: ['バックエンド開発', 'インフラ構築', 'システム設計'],
-    experience: '15年のエンジニア経験。金融系システムのアーキテクト、大規模Webサービスのインフラ責任者を歴任。',
-    recommendations: [
-      {
-        id: '3',
-        mentorId: '2',
-        authorId: '1',
-        author: mockUsers[0],
-        content: '鈴木さんの深い技術知識と実践的なアドバイスは、多くのメンティーにとって貴重な学びとなっています。',
-        isApproved: true,
-        createdAt: new Date('2024-02-15')
-      }
-    ],
-    rating: 4.9,
-    reviewCount: 20,
-    points: 3500,
-    rank: 'platinum',
-    availableForFlash: true,
-    availableForLongTerm: false,
-    sessionsCompleted: 75,
-    mentees: ['1', '4'],
-    availableSlots: [
-      { dayOfWeek: 2, time: '18:00' },
-      { dayOfWeek: 4, time: '18:00' }
-    ]
-  },
-  {
-    id: '3',
-    userId: '5',
-    user: mockUsers[4],
-    selfIntroduction: 'プロダクトマネジメントとエンジニアリングの両方の経験を活かし、技術とビジネスの橋渡しをサポートします。',
-    skills: ['Product Management', 'Agile', 'React', 'Data Analysis', 'UX Design'],
-    specialties: ['プロダクトマネジメント', 'アジャイル開発', 'データ分析'],
-    experience: '8年のエンジニア経験後、3年間プロダクトマネージャーとして活動。',
-    recommendations: [],
-    rating: 4.5,
-    reviewCount: 5,
-    points: 800,
-    rank: 'silver',
-    availableForFlash: true,
-    availableForLongTerm: true,
-    sessionsCompleted: 15,
-    mentees: ['1'],
-    availableSlots: [
-      { dayOfWeek: 1, time: '20:00' },
-      { dayOfWeek: 3, time: '20:00' },
-      { dayOfWeek: 5, time: '19:00' }
-    ]
-  }
-];
+  };
+});
+
+// 現在からの相対日付でセッションデータを生成
+const oneWeekAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+const twoWeeksAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 14);
+const threeWeeksAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 21);
+const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 14, 0, 0);
+const nextWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7, 10, 0, 0);
 
 export const mockSessions: MentoringSession[] = [
   {
     id: '1',
     mentorId: '1',
-    menteeId: '4',
-    mentor: mockMentorProfiles[0],
-    mentee: mockUsers[3],
+    menteeId: '1',  // 中林篤史
+    mentor: mockMentorProfiles[0],  // 田中花子
+    mentee: mockUsers[0],
     type: 'long-term',
     status: 'ongoing',
-    scheduledAt: new Date('2024-03-01T10:00:00'),
+    scheduledAt: tomorrow,
     duration: 60,
     notes: [
       {
         id: '1',
         sessionId: '1',
-        content: '## 本日の議題\\n- Reactのパフォーマンス最適化について\\n- useMemとuseCallbackの使い分け\\n\\n## 次回までの課題\\n- パフォーマンス計測ツールの実践',
+        content: '## 本日の議題\\n- Reactのパフォーマンス最適化について\\n- useMemoとuseCallbackの使い分け\\n\\n## 次回までの課題\\n- パフォーマンス計測ツールの実践',
         lastEditedBy: '2',
-        lastEditedAt: new Date('2024-03-01T11:00:00'),
-        createdAt: new Date('2024-03-01T10:00:00')
+        lastEditedAt: oneWeekAgo,
+        createdAt: oneWeekAgo
       }
     ],
-    createdAt: new Date('2024-02-20')
+    createdAt: threeWeeksAgo
+  },
+  {
+    id: '3',
+    mentorId: '1',
+    menteeId: '1',  // 中林篤史
+    mentor: mockMentorProfiles[0],  // 田中花子
+    mentee: mockUsers[0],
+    type: 'flash',
+    status: 'ongoing',
+    scheduledAt: nextWeek,
+    duration: 30,
+    createdAt: twoWeeksAgo
   },
   {
     id: '2',
@@ -187,7 +109,7 @@ export const mockSessions: MentoringSession[] = [
     mentee: mockUsers[3],
     type: 'flash',
     status: 'completed',
-    scheduledAt: new Date('2024-02-15T14:00:00'),
+    scheduledAt: twoWeeksAgo,
     duration: 30,
     review: {
       id: '1',
@@ -196,9 +118,9 @@ export const mockSessions: MentoringSession[] = [
       menteeId: '4',
       rating: 5,
       comment: 'Docker環境構築について、とてもわかりやすく教えていただきました。実践的なTipsも教えていただき、大変勉強になりました。',
-      createdAt: new Date('2024-02-15T15:00:00')
+      createdAt: twoWeeksAgo
     },
-    createdAt: new Date('2024-02-10')
+    createdAt: threeWeeksAgo
   }
 ];
 
@@ -212,8 +134,8 @@ export const mockKnowledgeArticles: KnowledgeArticle[] = [
     tags: ['React', 'パフォーマンス', 'フロントエンド'],
     likes: 24,
     views: 156,
-    createdAt: new Date('2024-02-01'),
-    updatedAt: new Date('2024-02-15')
+    createdAt: twoMonthsAgo,
+    updatedAt: new Date(now.getFullYear(), now.getMonth() - 1, 15)
   },
   {
     id: '2',
@@ -224,8 +146,8 @@ export const mockKnowledgeArticles: KnowledgeArticle[] = [
     tags: ['Kubernetes', 'マイクロサービス', 'インフラ'],
     likes: 32,
     views: 241,
-    createdAt: new Date('2024-01-15'),
-    updatedAt: new Date('2024-01-20')
+    createdAt: new Date(now.getFullYear(), now.getMonth() - 2, 15),
+    updatedAt: new Date(now.getFullYear(), now.getMonth() - 2, 20)
   },
   {
     id: '3',
@@ -236,8 +158,8 @@ export const mockKnowledgeArticles: KnowledgeArticle[] = [
     tags: ['メンタリング', 'コミュニケーション', 'マネジメント'],
     likes: 18,
     views: 98,
-    createdAt: new Date('2024-03-01'),
-    updatedAt: new Date('2024-03-01')
+    createdAt: oneMonthAgo,
+    updatedAt: oneMonthAgo
   }
 ];
 

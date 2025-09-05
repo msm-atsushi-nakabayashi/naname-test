@@ -1,0 +1,52 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "atsushi.uxpz.nakabayashi@misumi.co.jp",
+      "name": "中林篤史",
+      "roles": ["mentee"],
+      "department": "meviyLab",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=nakabayashi"
+    },
+    {
+      "id": "6",
+      "email": "admin@company.com",
+      "name": "山田太郎",
+      "roles": ["admin"],
+      "department": "経営企画部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=yamada"
+    },
+    {
+      "id": "2",
+      "email": "tanaka@company.com",
+      "name": "田中花子",
+      "roles": ["mentor", "mentee"],
+      "department": "エンジニアリング部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=tanaka"
+    },
+    {
+      "id": "3",
+      "email": "suzuki@company.com",
+      "name": "鈴木一郎",
+      "roles": ["mentor"],
+      "department": "インフラ部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=suzuki"
+    },
+    {
+      "id": "4",
+      "email": "sato@company.com",
+      "name": "佐藤美咲",
+      "roles": ["mentee"],
+      "department": "エンジニアリング部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=sato"
+    },
+    {
+      "id": "5",
+      "email": "watanabe@company.com",
+      "name": "渡辺健太",
+      "roles": ["mentor", "mentee"],
+      "department": "プロダクト部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=watanabe"
+    }
+  ]
+}

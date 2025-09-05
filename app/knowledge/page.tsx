@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Search, ThumbsUp, Eye, Tag, Plus, TrendingUp, BookOpen } from 'lucide-react';
 import { mockKnowledgeArticles } from '@/lib/data/mock';
+import type { UserRole } from '@/lib/types';
 import { formatDate, cn } from '@/lib/utils';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 
@@ -17,12 +19,16 @@ export default function KnowledgePage() {
     content: '',
     tags: [] as string[]
   });
+  const [temporaryArticles, setTemporaryArticles] = useState<typeof mockKnowledgeArticles>([]);
 
   const allTags = Array.from(
     new Set(mockKnowledgeArticles.flatMap(a => a.tags))
   );
 
-  const filteredArticles = mockKnowledgeArticles
+  // モックデータと一時的な記事を統合
+  const allArticles = [...mockKnowledgeArticles, ...temporaryArticles];
+  
+  const filteredArticles = allArticles
     .filter(article => {
       const matchesSearch = searchQuery === '' ||
         article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -44,10 +50,37 @@ export default function KnowledgePage() {
     });
 
   const handleCreateArticle = () => {
-    console.log('Creating article:', newArticle);
-    alert('記事が投稿されました！（モック）');
+    if (!newArticle.title || !newArticle.content) {
+      alert('タイトルと内容を入力してください');
+      return;
+    }
+    
+    // 一時的な記事を追加（ブラウザをリロードすると消えます）
+    const tempArticle = {
+      id: `temp-${Date.now()}`,
+      title: newArticle.title,
+      content: newArticle.content,
+      authorId: '1',
+      author: {
+        id: '1',
+        name: '中林篤史',
+        email: 'atsushi.uxpz.nakabayashi@misumi.co.jp',
+        department: 'meviyLab',
+        avatarUrl: 'https://api.dicebear.com/9.x/avataaars/svg?seed=nakabayashi',
+        roles: ['mentee'] as UserRole[],
+        createdAt: new Date()
+      },
+      tags: newArticle.tags.length > 0 ? newArticle.tags : ['新着'],
+      likes: 0,
+      views: 0,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
+    
+    setTemporaryArticles(prev => [tempArticle, ...prev]);
     setShowEditor(false);
     setNewArticle({ title: '', content: '', tags: [] });
+    alert('記事が投稿されました！（デモ用：リロードで消えます）');
   };
 
   return (
@@ -80,7 +113,7 @@ export default function KnowledgePage() {
             <BookOpen className="h-8 w-8 text-blue-500" />
             <div className="ml-3">
               <p className="text-sm text-gray-600">記事数</p>
-              <p className="text-xl font-bold text-gray-900">{mockKnowledgeArticles.length}</p>
+              <p className="text-xl font-bold text-gray-900">{allArticles.length}</p>
             </div>
           </div>
         </div>
@@ -90,7 +123,7 @@ export default function KnowledgePage() {
             <div className="ml-3">
               <p className="text-sm text-gray-600">総閲覧数</p>
               <p className="text-xl font-bold text-gray-900">
-                {mockKnowledgeArticles.reduce((sum, a) => sum + a.views, 0)}
+                {allArticles.reduce((sum, a) => sum + a.views, 0)}
               </p>
             </div>
           </div>
@@ -101,7 +134,7 @@ export default function KnowledgePage() {
             <div className="ml-3">
               <p className="text-sm text-gray-600">総いいね数</p>
               <p className="text-xl font-bold text-gray-900">
-                {mockKnowledgeArticles.reduce((sum, a) => sum + a.likes, 0)}
+                {allArticles.reduce((sum, a) => sum + a.likes, 0)}
               </p>
             </div>
           </div>
@@ -301,9 +334,12 @@ export default function KnowledgePage() {
                     {article.likes}
                   </div>
                 </div>
-                <button className="text-sm text-blue-600 hover:text-blue-800 font-medium">
+                <Link 
+                  href={`/knowledge/${article.id}`}
+                  className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                >
                   続きを読む →
-                </button>
+                </Link>
               </div>
             </div>
           </div>

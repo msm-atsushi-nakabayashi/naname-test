@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { Calendar, Clock, Users, Video, FileText, Star, Plus } from 'lucide-react';
 import { mockSessions } from '@/lib/data/mock';
@@ -13,6 +13,18 @@ export default function MentoringPage() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'upcoming' | 'past' | 'all'>('upcoming');
   const [sessionType, setSessionType] = useState<'all' | 'long-term' | 'flash'>('all');
+  const [temporaryBookings, setTemporaryBookings] = useState<{
+    id: string;
+    mentorName: string;
+    date: string;
+    time: string;
+  }[]>([]);
+
+  // localStorageから一時的な予約を取得
+  useEffect(() => {
+    const tempBookings = JSON.parse(localStorage.getItem('tempBookings') || '[]');
+    setTemporaryBookings(tempBookings);
+  }, []);
 
   const userSessions = mockSessions.filter(
     s => s.menteeId === user?.id || s.mentorId === user?.id
@@ -226,7 +238,25 @@ export default function MentoringPage() {
           ))}
         </div>
 
-        {filteredSessions.length === 0 && (
+        {/* 一時的な予約の表示 */}
+        {temporaryBookings.length > 0 && activeTab === 'upcoming' && (
+          <div className="mb-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-lg">
+            <p className="font-bold text-gray-900 mb-2">予約中のセッション（デモ用）</p>
+            {temporaryBookings.map((booking, index) => (
+              <div key={index} className="mt-2 p-3 bg-white rounded border">
+                <p className="font-medium">メンター: {booking.mentorName}</p>
+                <p className="text-sm text-gray-600">
+                  日時: {new Date(booking.date).toLocaleDateString('ja-JP')} {booking.time}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  ※ ブラウザをリロードすると消えます
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {filteredSessions.length === 0 && temporaryBookings.length === 0 && (
           <div className="p-12 text-center">
             <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-500">該当するセッションがありません</p>

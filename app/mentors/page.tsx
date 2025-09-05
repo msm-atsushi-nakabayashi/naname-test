@@ -7,7 +7,6 @@ import { mockMentorProfiles } from '@/lib/data/mock';
 import { getRankLabel, getRankColor, cn, formatDate } from '@/lib/utils';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
-import { useRouter } from 'next/navigation';
 
 // Booking Button Component
 interface BookingButtonProps {
@@ -22,21 +21,39 @@ function BookingButton({ mentor }: BookingButtonProps) {
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
-  const router = useRouter();
 
   const handleBooking = () => {
     if (selectedDate && selectedTime) {
-      alert(`予約が完了しました！\n日付: ${formatDate(selectedDate)}\n時間: ${selectedTime}`);
+      // 一時的に予約を保存（リロードで消えます）
+      const newBooking = {
+        id: `temp-${Date.now()}`,
+        mentorName: mentor.user.name,
+        date: selectedDate,
+        time: selectedTime
+      };
+      
+      
+      // localStorageに一時保存（デモ用）
+      const existingBookings = JSON.parse(localStorage.getItem('tempBookings') || '[]');
+      localStorage.setItem('tempBookings', JSON.stringify([...existingBookings, newBooking]));
+      
+      alert(`予約が完了しました！\n\nメンター: ${mentor.user.name}\n日付: ${formatDate(selectedDate)}\n時間: ${selectedTime}\n\n（デモ用：リロードで消えます）`);
       setShowModal(false);
-      router.push('/mentoring');
+      setSelectedDate(null);
+      setSelectedTime('');
     }
   };
 
+  // 現在の日付から30日分の日付を生成
+  const today = new Date();
   const availableDates = Array.from({ length: 30 }, (_, i) => {
-    const date = new Date();
+    const date = new Date(today);
     date.setDate(date.getDate() + i);
     return date;
   });
+
+  // 現在の月を取得
+  const currentMonth = availableDates[0].toLocaleDateString('ja-JP', { year: 'numeric', month: 'long' });
 
   const timeSlots = ['09:00', '10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
 
@@ -60,7 +77,7 @@ function BookingButton({ mentor }: BookingButtonProps) {
             <div className="p-6 space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  日付を選択
+                  日付を選択（{currentMonth}）
                 </label>
                 <div className="grid grid-cols-7 gap-1">
                   {['日', '月', '火', '水', '木', '金', '土'].map(day => (
@@ -68,8 +85,13 @@ function BookingButton({ mentor }: BookingButtonProps) {
                       {day}
                     </div>
                   ))}
-                  {availableDates.slice(0, 28).map((date, index) => {
+                  {/* 空白セルを追加してカレンダーを正しく配置 */}
+                  {Array.from({ length: availableDates[0].getDay() }, (_, i) => (
+                    <div key={`empty-${i}`} />
+                  ))}
+                  {availableDates.slice(0, 28 - availableDates[0].getDay()).map((date, index) => {
                     const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    const isToday = date.toDateString() === today.toDateString();
                     const isSelected = selectedDate?.toDateString() === date.toDateString();
                     return (
                       <button
@@ -77,13 +99,15 @@ function BookingButton({ mentor }: BookingButtonProps) {
                         onClick={() => !isWeekend && setSelectedDate(date)}
                         disabled={isWeekend}
                         className={`
-                          p-1 text-sm rounded
+                          p-1 text-sm rounded relative
                           ${isWeekend ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 
                             isSelected ? 'bg-blue-500 text-white' : 
+                            isToday ? 'bg-yellow-100 text-gray-700 font-bold' :
                             'hover:bg-gray-100 text-gray-700'}
                         `}
                       >
                         {date.getDate()}
+                        {isToday && <span className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-yellow-500 rounded-full"></span>}
                       </button>
                     );
                   })}

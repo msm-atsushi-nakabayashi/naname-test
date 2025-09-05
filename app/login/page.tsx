@@ -88,9 +88,6 @@ export default function LoginPage() {
           </div>
 
           <div className="text-sm text-center text-gray-600">
-            <p>テストアカウント:</p>
-            <p className="mt-1">メール: atsushi.nakabayashi@example.com</p>
-            <p>パスワード: password123</p>
           </div>
         </form>
       </div>

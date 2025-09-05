@@ -1,0 +1,66 @@
+{
+  "mentorProfiles": [
+    {
+      "id": "1",
+      "userId": "2",
+      "selfIntroduction": "フロントエンド開発を10年以上経験し、React、Vue.js、Next.jsなどのモダンなフレームワークに精通しています。チーム開発の経験も豊富で、若手エンジニアの成長をサポートすることに情熱を持っています。",
+      "skills": ["React", "TypeScript", "Next.js", "Vue.js", "Node.js"],
+      "specialties": ["フロントエンド開発", "パフォーマンス最適化", "アーキテクチャ設計"],
+      "experience": "10年以上のWeb開発経験。大規模ECサイトの開発リーダー、スタートアップでのCTO経験あり。",
+      "rating": 4.8,
+      "reviewCount": 12,
+      "points": 2500,
+      "rank": "gold",
+      "availableForFlash": true,
+      "availableForLongTerm": true,
+      "sessionsCompleted": 48,
+      "mentees": ["4", "5"],
+      "availableSlots": [
+        { "dayOfWeek": 1, "time": "19:00" },
+        { "dayOfWeek": 3, "time": "19:00" },
+        { "dayOfWeek": 5, "time": "19:00" }
+      ]
+    },
+    {
+      "id": "2",
+      "userId": "3",
+      "selfIntroduction": "バックエンド開発のスペシャリストとして、マイクロサービスアーキテクチャやクラウドインフラの設計・構築を得意としています。",
+      "skills": ["Go", "Python", "Kubernetes", "AWS", "PostgreSQL"],
+      "specialties": ["バックエンド開発", "インフラ構築", "システム設計"],
+      "experience": "15年のエンジニア経験。金融系システムのアーキテクト、大規模Webサービスのインフラ責任者を歴任。",
+      "rating": 4.9,
+      "reviewCount": 20,
+      "points": 3500,
+      "rank": "platinum",
+      "availableForFlash": true,
+      "availableForLongTerm": false,
+      "sessionsCompleted": 75,
+      "mentees": ["1", "4", "6"],
+      "availableSlots": [
+        { "dayOfWeek": 2, "time": "18:00" },
+        { "dayOfWeek": 4, "time": "18:00" }
+      ]
+    },
+    {
+      "id": "3",
+      "userId": "5",
+      "selfIntroduction": "プロダクトマネジメントとエンジニアリングの両方の経験を活かし、技術とビジネスの橋渡しをサポートします。",
+      "skills": ["Product Management", "Agile", "React", "Data Analysis", "UX Design"],
+      "specialties": ["プロダクトマネジメント", "アジャイル開発", "データ分析"],
+      "experience": "8年のエンジニア経験後、3年間プロダクトマネージャーとして活動。",
+      "rating": 4.5,
+      "reviewCount": 5,
+      "points": 800,
+      "rank": "silver",
+      "availableForFlash": true,
+      "availableForLongTerm": true,
+      "sessionsCompleted": 15,
+      "mentees": ["1", "6"],
+      "availableSlots": [
+        { "dayOfWeek": 1, "time": "20:00" },
+        { "dayOfWeek": 3, "time": "20:00" },
+        { "dayOfWeek": 5, "time": "19:00" }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import usersData from '@/data/users.json'
 
 interface User {
   id: string
@@ -21,40 +22,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const mockUsers: { email: string; password: string; user: User }[] = [
-  {
-    email: 'atsushi.nakabayashi@example.com',
-    password: 'password123',
-    user: {
-      id: '1',
-      email: 'atsushi.nakabayashi@example.com',
-      name: '中林 篤史',
-      role: 'mentee',
-      department: 'エンジニアリング部',
-      skills: ['JavaScript', 'React', 'TypeScript'],
-      avatar: '/avatars/nakabayashi.jpg'
-    }
-  },
-  {
-    email: 'mentor@example.com',
-    password: 'mentor123',
-    user: {
-      id: '2',
-      email: 'mentor@example.com',
-      name: '山田 太郎',
-      role: 'mentor',
-      department: 'エンジニアリング部',
-      skills: ['JavaScript', 'React', 'Node.js', 'TypeScript', 'AWS'],
-      avatar: '/avatars/yamada.jpg'
-    }
-  }
-]
-
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
+    // localStorageから既存のログイン情報を取得
     const storedUser = localStorage.getItem('user')
     if (storedUser) {
       const userData = JSON.parse(storedUser)
@@ -64,17 +37,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    const foundUser = mockUsers.find(
-      (u) => u.email === email && u.password === password
-    )
-
-    if (foundUser) {
-      setUser(foundUser.user)
-      setIsAuthenticated(true)
-      localStorage.setItem('user', JSON.stringify(foundUser.user))
-      return true
+    // 中林篤史のアカウントでログイン
+    if (email === 'atsushi.uxpz.nakabayashi@misumi.co.jp' && password === 'password123') {
+      const nakabayashiUser = usersData.users.find(u => u.id === '1')
+      if (nakabayashiUser) {
+        const userData: User = {
+          id: nakabayashiUser.id,
+          email: nakabayashiUser.email,
+          name: nakabayashiUser.name,
+          role: nakabayashiUser.roles.includes('admin') ? 'admin' : 
+                nakabayashiUser.roles.includes('mentor') ? 'mentor' : 'mentee',
+          department: nakabayashiUser.department,
+          avatar: nakabayashiUser.avatarUrl
+        }
+        setUser(userData)
+        setIsAuthenticated(true)
+        localStorage.setItem('user', JSON.stringify(userData))
+        return true
+      }
     }
-
     return false
   }
 
