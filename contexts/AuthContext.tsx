@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isValidPassword = true
       }
       // 管理者アカウント
-      else if (email === 'admin@company.com' && password === 'admin123') {
+      else if ((email === 'admin@company.com' || email === 'admin@misumi.co.jp') && password === 'admin123') {
         isValidPassword = true
       }
       // その他のテストアカウント

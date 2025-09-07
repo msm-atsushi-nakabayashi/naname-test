@@ -37,7 +37,7 @@ export default function DashboardPage() {
       });
       setArticleLikes(likesData);
     }
-  }, [user]);
+  }, [user, recentArticles]);
 
   const handleLikeToggle = (articleId: string, event: React.MouseEvent) => {
     event.preventDefault();
