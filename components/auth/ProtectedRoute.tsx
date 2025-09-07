@@ -18,7 +18,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     if (!isLoading) {
       if (!isAuthenticated) {
         router.push('/login')
-      } else if (requiredRole && user?.role !== requiredRole && user?.role !== 'admin') {
+      } else if (requiredRole && !user?.roles?.includes(requiredRole) && !user?.roles?.includes('admin')) {
         router.push('/dashboard')
       }
     }
@@ -37,7 +37,7 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     return null // リダイレクトを待つ
   }
 
-  if (requiredRole && user?.role !== requiredRole && user?.role !== 'admin') {
+  if (requiredRole && !user?.roles?.includes(requiredRole) && !user?.roles?.includes('admin')) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-red-600">アクセス権限がありません</div>

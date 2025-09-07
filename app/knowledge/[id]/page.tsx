@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -24,16 +24,39 @@ import {
 import { mockKnowledgeArticles } from '@/lib/data/mock';
 import { formatDate } from '@/lib/utils';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
+import { likesService } from '@/lib/services/likesService';
 
 export default function KnowledgeDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { user } = useAuth();
   const [liked, setLiked] = useState(false);
+  const [likesCount, setLikesCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   
   // 記事を取得（実際のアプリではAPIから取得）
   const article = mockKnowledgeArticles.find(a => a.id === params.id) || mockKnowledgeArticles[0];
+
+  useEffect(() => {
+    if (user && article) {
+      setLiked(likesService.isLiked(article.id, user.id));
+      const currentLikes = likesService.getLikesCount(article.id);
+      setLikesCount(article.likes + currentLikes);
+    }
+  }, [user, article]);
+
+  const handleLikeToggle = () => {
+    if (!user) return;
+    
+    const isNowLiked = likesService.toggleLike(article.id, user.id);
+    setLiked(isNowLiked);
+    
+    // 実際のいいね数を更新
+    const currentLikes = likesService.getLikesCount(article.id);
+    setLikesCount(article.likes + currentLikes);
+  };
 
   const handleCopyCode = (code: string, id: string) => {
     navigator.clipboard.writeText(code);
@@ -112,6 +135,10 @@ export default function KnowledgeDetailPage() {
                       <div className="flex items-center text-sm">
                         <Eye className="h-4 w-4 mr-1" />
                         {article.views} 閲覧
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <ThumbsUp className="h-4 w-4 mr-1" />
+                        {likesCount} Good
                       </div>
                     </div>
                   </div>
@@ -292,13 +319,17 @@ function SearchResults() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
                         <button
-                          onClick={() => setLiked(!liked)}
-                          className={`flex items-center space-x-2 px-4 py-2 rounded-lg ${
-                            liked ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-600'
-                          } hover:bg-gray-200`}
+                          onClick={handleLikeToggle}
+                          className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
+                            liked 
+                              ? 'bg-blue-500 text-white hover:bg-blue-600' 
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
                         >
                           <ThumbsUp className={`h-5 w-5 ${liked ? 'fill-current' : ''}`} />
-                          <span>{liked ? article.likes + 1 : article.likes}</span>
+                          <span className="font-medium">
+                            {liked ? 'Good済み' : 'Good'} ({likesCount})
+                          </span>
                         </button>
                         <button className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200">
                           <MessageCircle className="h-5 w-5" />

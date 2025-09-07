@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Search, ThumbsUp, Eye, Tag, Plus, TrendingUp, BookOpen } from 'lucide-react';
@@ -8,8 +8,11 @@ import { mockKnowledgeArticles } from '@/lib/data/mock';
 import type { UserRole } from '@/lib/types';
 import { formatDate, cn } from '@/lib/utils';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
+import { useAuth } from '@/contexts/AuthContext';
+import { likesService } from '@/lib/services/likesService';
 
 export default function KnowledgePage() {
+  const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<'recent' | 'popular' | 'views'>('recent');
@@ -20,6 +23,40 @@ export default function KnowledgePage() {
     tags: [] as string[]
   });
   const [temporaryArticles, setTemporaryArticles] = useState<typeof mockKnowledgeArticles>([]);
+  const [articleLikes, setArticleLikes] = useState<{ [key: string]: { liked: boolean; count: number } }>({});
+
+  useEffect(() => {
+    if (user) {
+      const likesData: { [key: string]: { liked: boolean; count: number } } = {};
+      mockKnowledgeArticles.forEach(article => {
+        likesData[article.id] = {
+          liked: likesService.isLiked(article.id, user.id),
+          count: article.likes + likesService.getLikesCount(article.id)
+        };
+      });
+      setArticleLikes(likesData);
+    }
+  }, [user]);
+
+  const handleLikeToggle = (articleId: string, event: React.MouseEvent) => {
+    event.preventDefault(); // Prevent navigation
+    event.stopPropagation();
+    
+    if (!user) return;
+    
+    const isNowLiked = likesService.toggleLike(articleId, user.id);
+    const article = mockKnowledgeArticles.find(a => a.id === articleId);
+    if (article) {
+      const newCount = article.likes + likesService.getLikesCount(articleId);
+      setArticleLikes(prev => ({
+        ...prev,
+        [articleId]: {
+          liked: isNowLiked,
+          count: newCount
+        }
+      }));
+    }
+  };
 
   const allTags = Array.from(
     new Set(mockKnowledgeArticles.flatMap(a => a.tags))
@@ -329,10 +366,21 @@ export default function KnowledgePage() {
                     <Eye className="h-4 w-4 mr-1" />
                     {article.views}
                   </div>
-                  <div className="flex items-center">
-                    <ThumbsUp className="h-4 w-4 mr-1" />
-                    {article.likes}
-                  </div>
+                  <button
+                    onClick={(e) => handleLikeToggle(article.id, e)}
+                    className={cn(
+                      "flex items-center px-2 py-1 rounded transition-all",
+                      articleLikes[article.id]?.liked
+                        ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                        : "text-gray-500 hover:bg-gray-100"
+                    )}
+                  >
+                    <ThumbsUp className={cn(
+                      "h-4 w-4 mr-1",
+                      articleLikes[article.id]?.liked && "fill-current"
+                    )} />
+                    {articleLikes[article.id]?.count || article.likes}
+                  </button>
                 </div>
                 <Link 
                   href={`/knowledge/${article.id}`}

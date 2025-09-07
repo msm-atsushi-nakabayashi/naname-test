@@ -10,7 +10,8 @@ import {
   Award,
   LogOut,
   Bell,
-  LogIn
+  LogIn,
+  Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -62,6 +63,20 @@ export function Navigation() {
                 </Link>
               );
             })}
+            {user?.roles?.includes('admin') && (
+              <Link
+                href="/admin"
+                className={cn(
+                  'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
+                  pathname.startsWith('/admin')
+                    ? 'bg-blue-100 text-blue-700'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                )}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                管理画面
+              </Link>
+            )}
           </nav>
         )}
 
@@ -82,8 +97,8 @@ export function Navigation() {
                     {user?.name}
                   </span>
                   <span className="text-xs text-gray-500">
-                    {user?.role === 'admin' ? '管理者' :
-                     user?.role === 'mentor' ? 'メンター' : 
+                    {user?.roles?.includes('admin') ? '管理者' :
+                     user?.roles?.includes('mentor') ? 'メンター' : 
                      'メンティー'}
                   </span>
                 </div>

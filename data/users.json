@@ -47,6 +47,14 @@
       "roles": ["mentor", "mentee"],
       "department": "プロダクト部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=watanabe"
+    },
+    {
+      "id": "7",
+      "email": "taro.misumi@misumi.co.jp",
+      "name": "三隅太郎",
+      "roles": ["mentee"],
+      "department": "エンジニアリング部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=misumi"
     }
   ]
 }

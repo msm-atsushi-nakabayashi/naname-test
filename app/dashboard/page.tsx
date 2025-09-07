@@ -1,15 +1,19 @@
 'use client'
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { Calendar, Users, BookOpen, TrendingUp, Clock, Star } from 'lucide-react';
+import { Calendar, Users, BookOpen, TrendingUp, Clock, Star, ThumbsUp, Eye } from 'lucide-react';
 import { mockSessions, mockMentorProfiles, mockKnowledgeArticles } from '@/lib/data/mock';
-import { formatDate, getStatusLabel, getStatusColor, getRankLabel, getRankColor } from '@/lib/utils';
+import { formatDate, getStatusLabel, getStatusColor, getRankLabel, getRankColor, cn } from '@/lib/utils';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
+import { likesService } from '@/lib/services/likesService';
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const [articleLikes, setArticleLikes] = useState<{ [key: string]: { liked: boolean; count: number } }>({});
+  
   const upcomingSessions = mockSessions
     .filter(s => s.menteeId === user?.id && s.status === 'ongoing')
     .slice(0, 3);
@@ -21,6 +25,39 @@ export default function DashboardPage() {
   const recentArticles = mockKnowledgeArticles
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 3);
+
+  useEffect(() => {
+    if (user) {
+      const likesData: { [key: string]: { liked: boolean; count: number } } = {};
+      recentArticles.forEach(article => {
+        likesData[article.id] = {
+          liked: likesService.isLiked(article.id, user.id),
+          count: article.likes + likesService.getLikesCount(article.id)
+        };
+      });
+      setArticleLikes(likesData);
+    }
+  }, [user]);
+
+  const handleLikeToggle = (articleId: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+    
+    if (!user) return;
+    
+    const isNowLiked = likesService.toggleLike(articleId, user.id);
+    const article = recentArticles.find(a => a.id === articleId);
+    if (article) {
+      const newCount = article.likes + likesService.getLikesCount(articleId);
+      setArticleLikes(prev => ({
+        ...prev,
+        [articleId]: {
+          liked: isNowLiked,
+          count: newCount
+        }
+      }));
+    }
+  };
 
   return (
     <ProtectedRoute>
@@ -154,20 +191,45 @@ export default function DashboardPage() {
             <div className="space-y-4">
               {recentArticles.map((article) => (
                 <div key={article.id} className="space-y-2">
-                  <h3 className="text-sm font-medium text-gray-900 line-clamp-2">
-                    {article.title}
-                  </h3>
+                  <Link href={`/knowledge/${article.id}`}>
+                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 hover:text-blue-600">
+                      {article.title}
+                    </h3>
+                  </Link>
                   <div className="flex items-center space-x-2 text-xs text-gray-500">
                     <span>{article.author.name}</span>
                     <span>•</span>
                     <span>{formatDate(article.createdAt)}</span>
                   </div>
-                  <div className="flex flex-wrap gap-1">
-                    {article.tags.slice(0, 2).map((tag) => (
-                      <span key={tag} className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
-                        {tag}
-                      </span>
-                    ))}
+                  <div className="flex items-center justify-between">
+                    <div className="flex flex-wrap gap-1">
+                      {article.tags.slice(0, 2).map((tag) => (
+                        <span key={tag} className="px-2 py-1 text-xs bg-gray-100 text-gray-600 rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center text-xs text-gray-500">
+                        <Eye className="h-3 w-3 mr-1" />
+                        {article.views}
+                      </div>
+                      <button
+                        onClick={(e) => handleLikeToggle(article.id, e)}
+                        className={cn(
+                          "flex items-center px-2 py-1 rounded text-xs transition-all",
+                          articleLikes[article.id]?.liked
+                            ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
+                            : "text-gray-500 hover:bg-gray-100"
+                        )}
+                      >
+                        <ThumbsUp className={cn(
+                          "h-3 w-3 mr-1",
+                          articleLikes[article.id]?.liked && "fill-current"
+                        )} />
+                        {articleLikes[article.id]?.count || article.likes}
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

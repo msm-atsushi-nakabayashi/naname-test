@@ -7,7 +7,7 @@ interface User {
   id: string
   email: string
   name: string
-  role: 'mentee' | 'mentor' | 'admin'
+  roles: string[]
   department?: string
   skills?: string[]
   avatar?: string
@@ -45,18 +45,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // 中林篤史のアカウントでログイン
-    if (email === 'atsushi.uxpz.nakabayashi@misumi.co.jp' && password === 'password123') {
-      const nakabayashiUser = usersData.users.find(u => u.id === '1')
-      if (nakabayashiUser) {
+    // ユーザーデータからメールアドレスで検索
+    const foundUser = usersData.users.find(u => u.email === email)
+    
+    if (foundUser) {
+      // パスワードの検証
+      let isValidPassword = false
+      
+      // 中林篤史のアカウント
+      if (email === 'atsushi.uxpz.nakabayashi@misumi.co.jp' && password === 'password123') {
+        isValidPassword = true
+      }
+      // 三隅太郎のアカウント
+      else if (email === 'taro.misumi@misumi.co.jp' && password === 'guest') {
+        isValidPassword = true
+      }
+      // 管理者アカウント
+      else if (email === 'admin@company.com' && password === 'admin123') {
+        isValidPassword = true
+      }
+      // その他のテストアカウント
+      else if (password === 'password') {
+        isValidPassword = true
+      }
+      
+      if (isValidPassword) {
         const userData: User = {
-          id: nakabayashiUser.id,
-          email: nakabayashiUser.email,
-          name: nakabayashiUser.name,
-          role: nakabayashiUser.roles.includes('admin') ? 'admin' : 
-                nakabayashiUser.roles.includes('mentor') ? 'mentor' : 'mentee',
-          department: nakabayashiUser.department,
-          avatar: nakabayashiUser.avatarUrl
+          id: foundUser.id,
+          email: foundUser.email,
+          name: foundUser.name,
+          roles: foundUser.roles,
+          department: foundUser.department,
+          avatar: foundUser.avatarUrl
         }
         setUser(userData)
         setIsAuthenticated(true)
