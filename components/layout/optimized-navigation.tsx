@@ -23,7 +23,7 @@ const navigation = [
   { name: 'ナレッジ', href: '/knowledge', icon: BookOpen },
 ];
 
-export function Navigation() {
+export function OptimizedNavigation() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
@@ -47,13 +47,16 @@ export function Navigation() {
           <nav className="ml-8 flex space-x-4">
             {navigation.map((item) => {
               const Icon = item.icon;
+              const isActive = pathname === item.href || 
+                             (pathname.startsWith(item.href) && pathname[item.href.length] === '/');
               return (
                 <Link
                   key={item.name}
                   href={item.href}
+                  prefetch={true}
                   className={cn(
                     'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                    pathname === item.href || (pathname.startsWith(item.href) && pathname[item.href.length] === '/')
+                    isActive
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   )}
@@ -66,6 +69,7 @@ export function Navigation() {
             {user?.roles?.includes('admin') && (
               <Link
                 href="/admin"
+                prefetch={true}
                 className={cn(
                   'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
                   pathname === '/admin' || (pathname.startsWith('/admin') && pathname[6] === '/')

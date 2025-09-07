@@ -1,7 +1,6 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { 
   Home, 
   Users, 
@@ -23,20 +22,24 @@ const navigation = [
   { name: 'ナレッジ', href: '/knowledge', icon: BookOpen },
 ];
 
-export function Navigation() {
+export function WorkingNavigation() {
   const pathname = usePathname();
-  const router = useRouter();
   const { user, isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
     logout();
-    router.push('/login');
+    window.location.href = '/login';
+  };
+
+  const navigateTo = (href: string) => {
+    console.log('Navigating to:', href);
+    window.location.href = href;
   };
 
   return (
     <div className="flex h-16 bg-white border-b border-gray-200 relative z-50">
       <div className="flex flex-1 items-center px-4">
-        <div className="flex items-center">
+        <div className="flex items-center cursor-pointer" onClick={() => navigateTo('/')}>
           <Award className="h-8 w-8 text-blue-600" />
           <span className="ml-2 text-xl font-bold text-gray-900">
             メンタリングプラットフォーム
@@ -47,35 +50,36 @@ export function Navigation() {
           <nav className="ml-8 flex space-x-4">
             {navigation.map((item) => {
               const Icon = item.icon;
+              const isActive = pathname === item.href;
               return (
-                <Link
+                <button
                   key={item.name}
-                  href={item.href}
+                  onClick={() => navigateTo(item.href)}
                   className={cn(
-                    'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                    pathname === item.href || (pathname.startsWith(item.href) && pathname[item.href.length] === '/')
+                    'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer',
+                    isActive
                       ? 'bg-blue-100 text-blue-700'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   )}
                 >
                   <Icon className="mr-2 h-4 w-4" />
                   {item.name}
-                </Link>
+                </button>
               );
             })}
             {user?.roles?.includes('admin') && (
-              <Link
-                href="/admin"
+              <button
+                onClick={() => navigateTo('/admin')}
                 className={cn(
-                  'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors',
-                  pathname === '/admin' || (pathname.startsWith('/admin') && pathname[6] === '/')
+                  'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors cursor-pointer',
+                  pathname === '/admin'
                     ? 'bg-blue-100 text-blue-700'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 )}
               >
                 <Settings className="mr-2 h-4 w-4" />
                 管理画面
-              </Link>
+              </button>
             )}
           </nav>
         )}
@@ -106,19 +110,19 @@ export function Navigation() {
 
               <button 
                 onClick={handleLogout}
-                className="p-2 text-gray-600 hover:text-gray-900"
+                className="p-2 text-gray-600 hover:text-gray-900 cursor-pointer"
               >
                 <LogOut className="h-5 w-5" />
               </button>
             </>
           ) : (
-            <Link 
-              href="/login"
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
+            <button 
+              onClick={() => navigateTo('/login')}
+              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
             >
               <LogIn className="mr-2 h-4 w-4" />
               ログイン
-            </Link>
+            </button>
           )}
         </div>
       </div>

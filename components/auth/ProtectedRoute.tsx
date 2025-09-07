@@ -15,14 +15,11 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
 
   useEffect(() => {
     // 初期化が完了してからチェック
-    if (!isLoading) {
-      if (!isAuthenticated) {
-        router.push('/login')
-      } else if (requiredRole && !user?.roles?.includes(requiredRole) && !user?.roles?.includes('admin')) {
-        router.push('/dashboard')
-      }
+    if (!isLoading && !isAuthenticated) {
+      console.log('Not authenticated, redirecting to login')
+      router.push('/login')
     }
-  }, [isAuthenticated, user, requiredRole, router, isLoading])
+  }, [isAuthenticated, isLoading, router])
 
   // 初期化中はローディング表示
   if (isLoading) {
@@ -33,11 +30,17 @@ export function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) 
     )
   }
 
+  // 認証されていない場合
   if (!isAuthenticated) {
-    return null // リダイレクトを待つ
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-gray-500">ログインページへリダイレクト中...</div>
+      </div>
+    )
   }
 
-  if (requiredRole && !user?.roles?.includes(requiredRole) && !user?.roles?.includes('admin')) {
+  // 権限チェック
+  if (requiredRole && user && !user.roles?.includes(requiredRole) && !user.roles?.includes('admin')) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-red-600">アクセス権限がありません</div>

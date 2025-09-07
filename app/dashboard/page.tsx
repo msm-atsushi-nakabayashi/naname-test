@@ -5,7 +5,6 @@ import Image from 'next/image';
 import { Calendar, Users, BookOpen, TrendingUp, Clock, Star, ThumbsUp, Eye } from 'lucide-react';
 import { mockSessions, mockMentorProfiles, mockKnowledgeArticles } from '@/lib/data/mock';
 import { formatDate, getStatusLabel, getStatusColor, getRankLabel, getRankColor, cn } from '@/lib/utils';
-import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { likesService } from '@/lib/services/likesService';
@@ -139,9 +138,11 @@ export default function DashboardPage() {
             ) : (
               <p className="text-sm text-gray-500">予定されているセッションはありません</p>
             )}
-            <Link href="/mentoring" className="mt-4 block text-center text-sm text-blue-600 hover:text-blue-800">
+            <button 
+              onClick={() => { window.location.href = '/mentoring'; }}
+              className="mt-4 block w-full text-center text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
               すべて見る →
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -176,9 +177,11 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-            <Link href="/mentors" className="mt-4 block text-center text-sm text-blue-600 hover:text-blue-800">
+            <button 
+              onClick={() => { window.location.href = '/mentors'; }}
+              className="mt-4 block w-full text-center text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
               すべて見る →
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -191,11 +194,11 @@ export default function DashboardPage() {
             <div className="space-y-4">
               {recentArticles.map((article) => (
                 <div key={article.id} className="space-y-2">
-                  <Link href={`/knowledge/${article.id}`}>
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2 hover:text-blue-600">
-                      {article.title}
-                    </h3>
-                  </Link>
+                  <h3 
+                    onClick={() => { window.location.href = `/knowledge/${article.id}`; }}
+                    className="text-sm font-medium text-gray-900 line-clamp-2 hover:text-blue-600 cursor-pointer">
+                    {article.title}
+                  </h3>
                   <div className="flex items-center space-x-2 text-xs text-gray-500">
                     <span>{article.author.name}</span>
                     <span>•</span>
@@ -234,9 +237,11 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-            <Link href="/knowledge" className="mt-4 block text-center text-sm text-blue-600 hover:text-blue-800">
+            <button 
+              onClick={() => { window.location.href = '/knowledge'; }}
+              className="mt-4 block w-full text-center text-sm text-blue-600 hover:text-blue-800 cursor-pointer">
               すべて見る →
-            </Link>
+            </button>
           </div>
         </div>
       </div>

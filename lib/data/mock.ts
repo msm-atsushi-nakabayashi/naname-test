@@ -100,27 +100,6 @@ export const mockSessions: MentoringSession[] = [
     scheduledAt: nextWeek,
     duration: 30,
     createdAt: twoWeeksAgo
-  },
-  {
-    id: '2',
-    mentorId: '2',
-    menteeId: '4',
-    mentor: mockMentorProfiles[1],
-    mentee: mockUsers[3],
-    type: 'flash',
-    status: 'completed',
-    scheduledAt: twoWeeksAgo,
-    duration: 30,
-    review: {
-      id: '1',
-      sessionId: '2',
-      mentorId: '2',
-      menteeId: '4',
-      rating: 5,
-      comment: 'Docker環境構築について、とてもわかりやすく教えていただきました。実践的なTipsも教えていただき、大変勉強になりました。',
-      createdAt: twoWeeksAgo
-    },
-    createdAt: threeWeeksAgo
   }
 ];
 
