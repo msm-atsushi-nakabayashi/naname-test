@@ -55,6 +55,15 @@
       "roles": ["mentee"],
       "department": "エンジニアリング部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=misumi"
+    },
+    {
+      "id": "8",
+      "email": "yukako.tsx8.kajiwara@misumi.co.jp",
+      "name": "梶原由佳子",
+      "password": "password123",
+      "roles": ["mentee"],
+      "department": "",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=kajiwara"
     }
   ]
 }
