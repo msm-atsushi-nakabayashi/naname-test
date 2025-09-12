@@ -60,6 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       else if (email === 'taro.misumi@misumi.co.jp' && password === 'guest') {
         isValidPassword = true
       }
+      // 梶原由佳子のアカウント
+      else if (email === 'yukako.tsx8.kajiwara@misumi.co.jp' && password === 'password123') {
+        isValidPassword = true
+      }
       // 管理者アカウント
       else if ((email === 'admin@company.com' || email === 'admin@misumi.co.jp') && password === 'admin123') {
         isValidPassword = true
