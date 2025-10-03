@@ -87,7 +87,17 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <div className="text-sm text-center text-gray-600">
+          <div className="text-sm text-center">
+            <button
+              type="button"
+              className="text-blue-600 hover:text-blue-500 underline"
+              onClick={() => {
+                // パスワードリセット機能の実装予定
+                alert('パスワードリセット機能は準備中です')
+              }}
+            >
+              パスワードをお忘れの方
+            </button>
           </div>
         </form>
       </div>
