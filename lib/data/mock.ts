@@ -90,6 +90,18 @@ export const mockSessions: MentoringSession[] = [
     createdAt: threeWeeksAgo
   },
   {
+    id: '2',
+    mentorId: '2',
+    menteeId: '4',  // 佐藤美咲
+    mentor: mockMentorProfiles[1],  // 鈴木次郎
+    mentee: mockUsers[3],
+    type: 'flash',
+    status: 'completed',
+    scheduledAt: oneWeekAgo,
+    duration: 30,
+    createdAt: twoWeeksAgo
+  },
+  {
     id: '3',
     mentorId: '1',
     menteeId: '1',  // 中林篤史
@@ -100,6 +112,18 @@ export const mockSessions: MentoringSession[] = [
     scheduledAt: nextWeek,
     duration: 30,
     createdAt: twoWeeksAgo
+  },
+  {
+    id: '4',
+    mentorId: '3',
+    menteeId: '5',  // 高橋健太
+    mentor: mockMentorProfiles[2],  // 加藤三郎
+    mentee: mockUsers[4],
+    type: 'long-term',
+    status: 'completed',
+    scheduledAt: twoWeeksAgo,
+    duration: 60,
+    createdAt: threeWeeksAgo
   }
 ];
 
@@ -177,5 +201,5 @@ export const mockSchedules: Schedule[] = [
   }
 ];
 
-// Current logged in user (mock)
-export const currentUser: User = mockUsers[3]; // 佐藤美咲 (mentee)
+// Current logged in user (mock) - Changed to admin for testing admin features
+export const currentUser: User = mockUsers.find(u => u.id === '9') || mockUsers[0]; // システム管理者 (admin)

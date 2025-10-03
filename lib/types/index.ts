@@ -56,6 +56,7 @@ export interface MentoringSession {
   duration?: number; // in minutes
   notes?: SessionNote[];
   review?: Review;
+  adminReaction?: AdminReaction;
   createdAt: Date;
 }
 
@@ -109,4 +110,17 @@ export interface Schedule {
   startTime: string; // HH:MM
   endTime: string; // HH:MM
   isAvailable: boolean;
+}
+
+export interface AdminReaction {
+  id: string;
+  sessionId: string;
+  adminId: string;
+  admin: User;
+  rating: number; // 1-5 for session quality
+  comment: string;
+  recommendation?: string; // recommendations for improvement
+  tags: string[]; // e.g., ['excellent', 'needs-improvement', 'creative-approach']
+  createdAt: Date;
+  updatedAt: Date;
 }

@@ -46,29 +46,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = async (email: string, password: string): Promise<boolean> => {
     // ユーザーデータからメールアドレスで検索
-    const foundUser = usersData.users.find(u => u.email === email)
+    const foundUser = usersData.users.find(u => u.email === email) as any
     
     if (foundUser) {
       // パスワードの検証
       let isValidPassword = false
       
-      // 中林篤史のアカウント
-      if (email === 'atsushi.uxpz.nakabayashi@misumi.co.jp' && password === 'password123') {
+      // まず、users.jsonにpasswordフィールドがある場合はそれを使用
+      if (foundUser.password && foundUser.password === password) {
         isValidPassword = true
       }
-      // 三隅太郎のアカウント
+      // 個別のアカウント認証（後方互換性のため）
+      else if (email === 'atsushi.uxpz.nakabayashi@misumi.co.jp' && password === 'password123') {
+        isValidPassword = true
+      }
       else if (email === 'taro.misumi@misumi.co.jp' && password === 'guest') {
         isValidPassword = true
       }
-      // 梶原由佳子のアカウント
       else if (email === 'yukako.tsx8.kajiwara@misumi.co.jp' && password === 'password123') {
         isValidPassword = true
       }
-      // 管理者アカウント
       else if ((email === 'admin@company.com' || email === 'admin@misumi.co.jp') && password === 'admin123') {
         isValidPassword = true
       }
-      // その他のテストアカウント
+      // フォールバック - デフォルトパスワード
       else if (password === 'password') {
         isValidPassword = true
       }

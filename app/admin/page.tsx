@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { 
   Users, 
   BookOpen, 
@@ -14,12 +15,21 @@ import {
   Eye,
   UserPlus,
   Award,
-  Clock
+  Clock,
+  MessageCircle,
+  Edit3,
+  Star,
+  User
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { mockUsers, mockKnowledgeArticles, mockSessions, mockMentorProfiles } from '@/lib/data/mock';
 import { likesService } from '@/lib/services/likesService';
+import { adminReactionService } from '@/lib/services/adminReactionService';
 import { formatDate } from '@/lib/utils';
+import SessionReactionPanel from '@/components/admin/SessionReactionPanel';
+import MentorProfileEditor from '@/components/admin/MentorProfileEditor';
+import { mentorProfileService } from '@/lib/services/mentorProfileService';
+import { MentoringSession, AdminReaction, MentorProfile } from '@/lib/types';
 
 interface DashboardStats {
   totalUsers: number;
@@ -66,6 +76,10 @@ export default function AdminDashboard() {
     status: string;
     scheduledAt: Date;
   }[]>([]);
+  const [selectedSession, setSelectedSession] = useState<MentoringSession | null>(null);
+  const [showReactionPanel, setShowReactionPanel] = useState(false);
+  const [selectedMentor, setSelectedMentor] = useState<MentorProfile | null>(null);
+  const [showMentorEditor, setShowMentorEditor] = useState(false);
 
   useEffect(() => {
     // Check if user is admin
@@ -134,6 +148,33 @@ export default function AdminDashboard() {
 
     setRecentSessions(recent);
   }, [user, router]);
+
+  const handleSessionReaction = (sessionId: string, reactionData: Omit<AdminReaction, 'id' | 'createdAt' | 'updatedAt'>) => {
+    adminReactionService.saveReaction(sessionId, reactionData);
+    setShowReactionPanel(false);
+    setSelectedSession(null);
+  };
+
+  const openReactionPanel = (session: MentoringSession) => {
+    const existingReaction = adminReactionService.getReaction(session.id);
+    const sessionWithReaction = { ...session, adminReaction: existingReaction };
+    setSelectedSession(sessionWithReaction);
+    setShowReactionPanel(true);
+  };
+
+  const openMentorEditor = (mentor: MentorProfile) => {
+    setSelectedMentor(mentor);
+    setShowMentorEditor(true);
+  };
+
+  const handleMentorProfileSave = (updatedMentor: MentorProfile) => {
+    mentorProfileService.updateMentorProfile(updatedMentor.id, updatedMentor);
+    setShowMentorEditor(false);
+    setSelectedMentor(null);
+    
+    // Force re-render by updating the page (in a real app, you'd update state)
+    window.location.reload();
+  };
 
   if (!user || !user.roles.includes('admin')) {
     return null;
@@ -264,38 +305,125 @@ export default function AdminDashboard() {
             </div>
             <div className="p-6">
               <div className="space-y-4">
-                {recentSessions.map(session => (
-                  <div key={session.id} className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <p className="text-sm font-medium text-gray-900">
-                          {session.mentor} → {session.mentee}
+                {recentSessions.map(session => {
+                  const fullSession = mockSessions.find(s => s.id === session.id);
+                  const hasReaction = adminReactionService.getReaction(session.id);
+                  
+                  return (
+                    <div key={session.id} className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <p className="text-sm font-medium text-gray-900">
+                            {session.mentor} → {session.mentee}
+                          </p>
+                          <span className={`px-2 py-1 text-xs rounded-full ${
+                            session.type === 'long-term' 
+                              ? 'bg-purple-100 text-purple-700'
+                              : 'bg-blue-100 text-blue-700'
+                          }`}>
+                            {session.type === 'long-term' ? '長期' : 'フラッシュ'}
+                          </span>
+                          {hasReaction && (
+                            <span className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-700 flex items-center">
+                              <MessageCircle className="h-3 w-3 mr-1" />
+                              反応済み
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {formatDate(session.scheduledAt)}
                         </p>
+                      </div>
+                      <div className="flex items-center space-x-2">
                         <span className={`px-2 py-1 text-xs rounded-full ${
-                          session.type === 'long-term' 
-                            ? 'bg-purple-100 text-purple-700'
-                            : 'bg-blue-100 text-blue-700'
+                          session.status === 'completed'
+                            ? 'bg-green-100 text-green-700'
+                            : session.status === 'ongoing'
+                            ? 'bg-blue-100 text-blue-700'
+                            : 'bg-gray-100 text-gray-700'
                         }`}>
-                          {session.type === 'long-term' ? '長期' : 'フラッシュ'}
+                          {session.status === 'completed' ? '完了' : 
+                           session.status === 'ongoing' ? '進行中' : '予定'}
+                        </span>
+                        {fullSession && session.status === 'completed' && (
+                          <button
+                            onClick={() => openReactionPanel(fullSession)}
+                            className="px-2 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors flex items-center"
+                            title="反応を残す"
+                          >
+                            <Edit3 className="h-3 w-3 mr-1" />
+                            {hasReaction ? '編集' : '反応'}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mentor Management Section */}
+        <div className="mt-6 bg-white rounded-lg shadow">
+          <div className="p-6 border-b">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">メンター管理</h2>
+              <Users className="h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+          <div className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mockMentorProfiles.map(mentor => (
+                <div key={mentor.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                      {mentor.user.avatarUrl ? (
+                        <Image
+                          src={mentor.user.avatarUrl}
+                          alt={mentor.user.name}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
+                          <User className="h-6 w-6 text-gray-400" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-medium text-gray-900 truncate">
+                        {mentor.user.name}
+                      </h3>
+                      <div className="flex items-center mt-1">
+                        <Star className="h-3 w-3 text-yellow-400 fill-current" />
+                        <span className="ml-1 text-xs text-gray-600">
+                          {mentor.rating} ({mentor.reviewCount}件)
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-1">
-                        {formatDate(session.scheduledAt)}
-                      </p>
+                      <div className="mt-1">
+                        <span className={`inline-block px-2 py-0.5 text-xs rounded-full ${
+                          mentor.rank === 'platinum' ? 'bg-gray-100 text-gray-800' :
+                          mentor.rank === 'gold' ? 'bg-yellow-100 text-yellow-800' :
+                          mentor.rank === 'silver' ? 'bg-gray-100 text-gray-600' :
+                          'bg-orange-100 text-orange-800'
+                        }`}>
+                          {mentor.rank}
+                        </span>
+                      </div>
                     </div>
-                    <span className={`px-2 py-1 text-xs rounded-full ${
-                      session.status === 'completed'
-                        ? 'bg-green-100 text-green-700'
-                        : session.status === 'ongoing'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}>
-                      {session.status === 'completed' ? '完了' : 
-                       session.status === 'ongoing' ? '進行中' : '予定'}
-                    </span>
                   </div>
-                ))}
-              </div>
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      onClick={() => openMentorEditor(mentor)}
+                      className="px-3 py-1 text-xs bg-blue-50 text-blue-600 rounded hover:bg-blue-100 transition-colors"
+                    >
+                      編集
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -340,6 +468,31 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+
+        {/* Session Reaction Panel */}
+        {showReactionPanel && selectedSession && user && (
+          <SessionReactionPanel
+            session={selectedSession}
+            admin={user}
+            onReactionSave={handleSessionReaction}
+            onClose={() => {
+              setShowReactionPanel(false);
+              setSelectedSession(null);
+            }}
+          />
+        )}
+
+        {/* Mentor Profile Editor */}
+        {showMentorEditor && selectedMentor && (
+          <MentorProfileEditor
+            mentor={selectedMentor}
+            onSave={handleMentorProfileSave}
+            onClose={() => {
+              setShowMentorEditor(false);
+              setSelectedMentor(null);
+            }}
+          />
+        )}
       </div>
     </div>
   );

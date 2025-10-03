@@ -8,6 +8,7 @@ import { formatDate, getStatusLabel, getStatusColor, getRankLabel, getRankColor,
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
 import { useAuth } from '@/contexts/AuthContext';
 import { likesService } from '@/lib/services/likesService';
+import WeatherWidget from '@/components/weather/WeatherWidget';
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -107,6 +108,11 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Weather Widget */}
+      <div className="mb-8">
+        <WeatherWidget />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

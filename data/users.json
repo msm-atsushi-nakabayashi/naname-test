@@ -4,6 +4,7 @@
       "id": "1",
       "email": "atsushi.uxpz.nakabayashi@misumi.co.jp",
       "name": "中林篤史",
+      "password": "password123",
       "roles": ["mentee"],
       "department": "meviyLab",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=nakabayashi"
@@ -12,6 +13,7 @@
       "id": "6",
       "email": "admin@misumi.co.jp",
       "name": "山田太郎",
+      "password": "admin123",
       "roles": ["admin"],
       "department": "経営企画部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=yamada"
@@ -20,6 +22,7 @@
       "id": "2",
       "email": "tanaka@misumi.co.jp",
       "name": "田中花子",
+      "password": "password",
       "roles": ["mentor", "mentee"],
       "department": "エンジニアリング部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=tanaka"
@@ -28,6 +31,7 @@
       "id": "3",
       "email": "suzuki@misumi.co.jp",
       "name": "鈴木一郎",
+      "password": "password",
       "roles": ["mentor"],
       "department": "インフラ部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=suzuki"
@@ -36,6 +40,7 @@
       "id": "4",
       "email": "sato@misumi.co.jp",
       "name": "佐藤美咲",
+      "password": "password",
       "roles": ["mentee"],
       "department": "エンジニアリング部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=sato"
@@ -44,6 +49,7 @@
       "id": "5",
       "email": "watanabe@misumi.co.jp",
       "name": "渡辺健太",
+      "password": "password",
       "roles": ["mentor", "mentee"],
       "department": "プロダクト部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=watanabe"
@@ -52,6 +58,7 @@
       "id": "7",
       "email": "taro.misumi@misumi.co.jp",
       "name": "三隅太郎",
+      "password": "guest",
       "roles": ["mentee"],
       "department": "エンジニアリング部",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=misumi"
@@ -64,6 +71,24 @@
       "roles": ["mentee"],
       "department": "",
       "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=kajiwara"
+    },
+    {
+      "id": "9",
+      "email": "admin.master@misumi.co.jp",
+      "name": "システム管理者",
+      "password": "admin123",
+      "roles": ["admin"],
+      "department": "システム管理部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=admin&backgroundColor=b6e3f4&clothesColor=262e33&eyebrowType=default&eyeType=default&facialHairType=none&hairColor=2c1b18&mouthType=default&skinColor=f2d2bd&topType=shortHairDreads01"
+    },
+    {
+      "id": "10",
+      "email": "support.admin@misumi.co.jp",
+      "name": "高橋理沙",
+      "password": "admin456",
+      "roles": ["admin", "mentor"],
+      "department": "人事部",
+      "avatarUrl": "https://api.dicebear.com/9.x/avataaars/svg?seed=takahashi&backgroundColor=c0aede&clothesColor=3c4f5c&eyebrowType=defaultNatural&eyeType=happy&facialHairType=none&hairColor=724133&mouthType=smile&skinColor=fdbcb4&topType=longHairStraight"
     }
   ]
 }
